@@ -11,4 +11,4 @@ print("hello duqiao")
 ```
 This is a **R** code test2 `library(ggplot2)` haha
 
-![image](https://github.com/HanYu-me/GWAs/blob/main/imgs/test.png)
+![what](https://github.com/HanYu-me/GWAs/blob/main/imgs/test.png)
