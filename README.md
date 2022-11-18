@@ -3,7 +3,7 @@ This repo is a simple fast GWAs pipeline.
 
 ## Dependencies
 Code can be run on win, and also can be run on linux by changing the file path and software to linux form.
-#### R(3.6<=version<4.0)
+#### R(3.6<version<4.0)
     packages
     - **GenABEL** for quality control and finding population structure.
     - qqman for drawing the manhattan plot.
