@@ -1,232 +1,28 @@
 library(GenABEL)
-library(readxl)
 library(parallel)
 ###data save path
 #run data
-path1="C:\\Users\\MSI\\OneDrive\\桌面\\拟南芥or柳树\\工作数据\\2022.09.27\\"
+path1=""
 #draw figure
-path2="C:\\Users\\MSI\\OneDrive\\桌面\\拟南芥or柳树\\结果保存\\2022.09.27\\"
+path2=""
 #software path
-gcta <- "C:\\Users\\MSI\\OneDrive\\桌面\\拟南芥or柳树\\分析代码\\2022.07.28\\gcta_v1.94.0Beta_windows_x86_64\\gcta_v1.94.0Beta_windows_x86_64\\bin\\gcta_v1.94.0Beta_windows_x86_64"
-plink <- "C:\\Users\\MSI\\OneDrive\\桌面\\拟南芥or柳树\\分析代码\\2022.07.28\\plink_win64_20220402\\plink"
-gec="java -jar C:\\Users\\MSI\\OneDrive\\桌面\\拟南芥or柳树\\分析代码\\2022.09.05\\gec\\gec.jar"
-
-###processing raw phenotype data
-#load the 1001 arabidopsis data
-load("C:\\Users\\MSI\\OneDrive\\桌面\\拟南芥or柳树\\工作数据\\2022.07.11\\fl.data.RData")
-#load the phe data
-phe=as.data.frame(read_excel("C:\\Users\\MSI\\OneDrive\\桌面\\拟南芥or柳树\\工作数据\\2022.07.27\\成都和红原同质园生态型拟南芥开花物候数据.xlsx",sheet=1,col_names=T))
-for(i in 12:ncol(phe)){
-  phe[,i]=as.numeric(phe[,i])
-}
-table(phe$Commongarden)
-CD_phe=phe[which(phe$Commongarden=="Chengdu"),]
-HY_phe=phe[which(phe$Commongarden=="Hongyuan"),]
-#load id
-arab_name=as.data.frame(read_excel("C:\\Users\\MSI\\OneDrive\\桌面\\拟南芥or柳树\\工作数据\\2022.07.27\\生态型拟南芥种源地信息.xlsx",sheet=1,col_names=T))
-#caculate CV(coeffcient variation)
-CD_CV=data.frame(matrix(nrow=nrow(CD_phe)/12,ncol=8))
-names(CD_CV)=names(phe)[12:19]
-HY_CV=data.frame(matrix(nrow=nrow(HY_phe)/8,ncol=8))
-names(HY_CV)=names(phe)[12:19]
-#CD CV
-for(i in seq(from=1,to=nrow(CD_phe),by=12)){
-  for(j in 12:19){
-    B=CD_phe[i:(i+11),j]  
-    B=sd(B,na.rm = TRUE)/mean(B,na.rm = TRUE)
-    CD_CV[(i%/%12)+1,(j-11)]=B
-  }
-}
-#HY CV
-for(i in seq(from=1,to=nrow(HY_phe),by=8)){
-  for(j in 12:19){
-    B=HY_phe[i:(i+7),j]
-    B=sd(B,na.rm = TRUE)/mean(B,na.rm = TRUE)
-    HY_CV[(i%/%8)+1,(j-11)]=B
-  }
-}
-#save raw CV
-HY_CV2=HY_CV
-CD_CV2=CD_CV
-#caculate the mean ph data (if cv >0.05 or cv>95%CV, remove the maxmal and minmal 2 indivadual)
-Add_phe=data.frame(matrix(nrow=nrow(HY_phe)/8,ncol=17))
-names(Add_phe)=c("id",c(paste(rep("CD",8),names(phe)[12:19],sep="_")),c(paste(rep("HY",8),names(phe)[12:19],sep="_")))
-sort(table(arab_name$id_1001))
-for(i in 1:240){
-  Add_phe[i,1]=as.numeric(as.character(arab_name[which(arab_name$label==i),9]))
-  for(j in 12:19){
-    CD=CD_phe[((i-1)*12+1):(i*12),j]
-    if(!is.na(sd(CD,na.rm = TRUE)/mean(CD,na.rm = TRUE))){
-      if(mean(CD_CV2[,(j-11)],na.rm=T)<0.05){
-        if(sd(CD,na.rm = TRUE)/mean(CD,na.rm = TRUE)>quantile(sort(CD_CV2[,(j-11)]),0.95)){
-          CD=sort(CD)
-          CD=CD[3:(length(CD)-2)]
-          CD_CV[i,(j-11)]=sd(CD,na.rm=T)/mean(CD,na.rm = T)
-          CD=mean(CD,na.rm=T)
-        }else{
-          CD=mean(CD,na.rm=T)
-        }
-      }else if(mean(CD_CV2[,(j-11)],na.rm=T)>=0.05){
-        if(sd(CD,na.rm = TRUE)/mean(CD,na.rm = TRUE)>0.05){
-          CD=sort(CD)
-          CD=CD[3:(length(CD)-2)]
-          CD_CV[i,(j-11)]=sd(CD,na.rm=T)/mean(CD,na.rm = T)
-          CD=mean(CD,na.rm=T)
-        }else{
-          CD=mean(CD,na.rm=T)
-        }
-      }
-      
-    }else{
-      CD=NA
-    }
-    Add_phe[i,(j-10)]=CD
-  }
-  
-  for(j in 12:19){
-    CD=HY_phe[((i-1)*8+1):(i*8),j]
-    if(!is.na(sd(CD,na.rm = TRUE)/mean(CD,na.rm = TRUE))){
-      if(mean(HY_CV2[,(j-11)],na.rm=T)<0.05){
-        if(sd(CD,na.rm = TRUE)/mean(CD,na.rm = TRUE)>quantile(sort(HY_CV2[,(j-11)]),0.95)){
-          CD=sort(CD)
-          CD=CD[3:(length(CD)-2)]
-          HY_CV[i,(j-11)]=sd(CD,na.rm=T)/mean(CD,na.rm = T)
-          CD=mean(CD,na.rm=T)
-        }else{
-          CD=mean(CD,na.rm=T)
-        }
-      }else if(mean(HY_CV2[,(j-11)],na.rm=T)>=0.05){
-        if(sd(CD,na.rm = TRUE)/mean(CD,na.rm = TRUE)>0.05){
-          CD=sort(CD)
-          CD=CD[3:(length(CD)-2)]
-          HY_CV[i,(j-11)]=sd(CD,na.rm=T)/mean(CD,na.rm = T)
-          CD=mean(CD,na.rm=T)
-        }else{
-          CD=mean(CD,na.rm=T)
-        }
-      }
-      
-    }else{
-      CD=NA
-    }
-    Add_phe[i,(j-2)]=CD
-  }
-  
-}
-Add_phe=Add_phe[which(!is.na(Add_phe$id)),]
-                
-###CV visualization
-CD_CV$id=0
-CD_CV2$id=0
-HY_CV$id=0
-HY_CV2$id=0
-for(i in 1:240){
-  CD_CV$id[i]=as.numeric(as.character(arab_name[which(arab_name$label==i),9]))
-  CD_CV2$id[i]=as.numeric(as.character(arab_name[which(arab_name$label==i),9]))
-  HY_CV$id[i]=as.numeric(as.character(arab_name[which(arab_name$label==i),9]))
-  HY_CV2$id[i]=as.numeric(as.character(arab_name[which(arab_name$label==i),9]))
-}
-CD_CV_main=CD_CV[which(CD_CV$id%in%phdata(fl_1)[,1]),]
-CD_CV2_main=CD_CV2[which(CD_CV2$id%in%phdata(fl_1)[,1]),]
-CD_CV_all=CD_CV[which(CD_CV$id%in%phdata(fl.data.merge)[,1]),]
-CD_CV2_all=CD_CV2[which(CD_CV2$id%in%phdata(fl.data.merge)[,1]),]
-
-HY_CV_main=HY_CV[which(HY_CV$id%in%phdata(fl_1)[,1]),]
-HY_CV2_main=HY_CV2[which(HY_CV2$id%in%phdata(fl_1)[,1]),]
-HY_CV_all=HY_CV[which(HY_CV$id%in%phdata(fl.data.merge)[,1]),]
-HY_CV2_all=HY_CV2[which(HY_CV2$id%in%phdata(fl.data.merge)[,1]),]
-
-'
-for(i in 1:8){
-  png(paste(path,"CD_",names(CD_CV)[i],"_CV.png",sep=""))
-  par(mfrow=c(2,2))
-  hist(CD_CV2_main[,i],breaks=90,main=paste("Main group raw CV of CD",names(CD_CV)[i]),xlab = "value")
-  hist(CD_CV2_all[,i],breaks=90,main=paste("All group raw CV of CD",names(CD_CV)[i]),xlab = "value")
-  hist(CD_CV_main[,i],breaks=90,main=paste("Main group adjusted CV of CD",names(CD_CV2)[i]),xlab = "value")  
-  hist(CD_CV_all[,i],breaks=90,main=paste("All group adjusted CV of CD",names(CD_CV2)[i]),xlab = "value")  
-  dev.off()
-}
-for(i in 1:8){
-  png(paste(path,"HY_",names(HY_CV)[i],"_CV.png",sep=""))
-  par(mfrow=c(2,2))
-  hist(HY_CV2_main[,i],breaks=90,main=paste("Main group raw CV of HY",names(HY_CV)[i]),xlab = "value")
-  hist(HY_CV2_all[,i],breaks=90,main=paste("All group raw CV of HY",names(HY_CV)[i]),xlab = "value")
-  hist(HY_CV_main[,i],breaks=90,main=paste("Main group adjusted CV of HY",names(HY_CV2)[i]),xlab = "value")  
-  hist(HY_CV_all[,i],breaks=90,main=paste("All group adjusted CV of HY",names(HY_CV2)[i]),xlab = "value")  
-  dev.off()
-}
-'
-
-
-#drop duplicated data
-Add_phe_dup <- Add_phe[which(Add_phe$id %in% Add_phe[duplicated(Add_phe$id),1]),]
-Add_phe=Add_phe[which(!Add_phe$id%in%Add_phe_dup$id),]
-sort(table(Add_phe_dup$id))
-sort(table(Add_phe$id))
-#input location data to compare with id data
-data2=read.csv("C:\\Users\\MSI\\OneDrive\\桌面\\拟南芥or柳树\\工作数据\\2022.07.28\\1001genomes-accessions.csv",header=T,sep=";")
-data2=data2[,c(1,3,6,7)]
-data=arab_name[which(arab_name$id_1001 %in% Add_phe_dup$id),c(9,2,4,5)]
-names(data)[1]="id"
-data3=merge.data.frame(data,data2,by="id")
-data3=data3[,c(1,2,3,6,4,7,5)]
-k=data3[which((data3$latitude.x!=data3$latitude.y)|(data3$longitude.x!=data3$longitude.y)),]
-unique(k$id)
-#droup all different data
-Add_phe_dup=Add_phe_dup[which(!Add_phe_dup$id %in% unique(k$id)),]
-name=unique(Add_phe_dup$id)
-for( i in 1:length(name)){
-  a=Add_phe_dup[which(Add_phe_dup$id==name[i]),]
-  print(a)
-  for(j in 1:ncol(a)){
-    a[1,j]=median(a[,j],na.rm=T)
-  }
-  Add_phe=rbind.data.frame(Add_phe,a[1,])
-}
-##check data 
-Add_phe$CD_f_lfdays=Add_phe$CD_lf_doy-Add_phe$CD_ff_doy
-Add_phe$CD_b_ffdays=Add_phe$CD_ff_doy-Add_phe$CD_bol_doy
-Add_phe$CD_b_lfdays=Add_phe$CD_lf_doy-Add_phe$CD_bol_doy
-Add_phe$CD_s_bdays=Add_phe$CD_bol_doy-25
-Add_phe$CD_s_ffdays=Add_phe$CD_ff_doy-25
-Add_phe$CD_s_lfdays=Add_phe$CD_lf_doy-25
-
-Add_phe$HY_f_lfdays=Add_phe$HY_lf_doy-Add_phe$HY_ff_doy
-Add_phe$HY_b_ffdays=Add_phe$HY_ff_doy-Add_phe$HY_bol_doy
-Add_phe$HY_b_lfdays=Add_phe$HY_lf_doy-Add_phe$HY_bol_doy
-Add_phe$HY_s_bdays=Add_phe$HY_bol_doy-145
-Add_phe$HY_s_ffdays=Add_phe$HY_ff_doy-145
-Add_phe$HY_s_lfdays=Add_phe$HY_lf_doy-145
-
-#add the subtract trait 
-names(Add_phe)
-Add_phe=Add_phe[,c(1:9,18,10:17,19)]
-names(Add_phe)
-for(i in 1:9){
-  Add_phe=cbind.data.frame(Add_phe,(Add_phe[,(i+10)]-Add_phe[,(i+1)]))
-  names(Add_phe)[19+i]=paste(names(Add_phe)[i+10],"_",names(Add_phe)[i+1],sep="")
-}
+gcta=""
+plink=""
+gec=""
 
 ##add phe data to GenABEL data
+#load the 1001 arabidopsis data
+load("data.RData")
+#load the phe data
+phe=as.data.frame(read.csv(""))
 fl.data.merge=add.phdata(fl.data,Add_phe)
 phdata(fl.data.merge)[1:10,]
-
-
-#del empty phe individual
-names(phdata(fl.data.merge)[1,])
-fl.data.merge=del.phdata(fl.data.merge,c("FT10_mean","FT16_mean","FT10_sd","FT16_sd"))
-names(phdata(fl.data.merge)[1,])
-fl.data.merge=fl.data.merge[which(fl.data.merge@phdata$id%in%Add_phe$id),]
 nids(fl.data.merge)
 
 ###Quality Control
 #QC to all individual
 qc1 <- check.marker(fl.data.merge, p.level=0)
 fl.data.merge=fl.data.merge[qc1$idok,qc1$snpok]
-#export to caculate admixture
-#export.plink(fl.data.merge)
-#population structure and QC to main group
-par(mfrow=c(2,2))
 ibs_m=ibs(fl.data.merge,weight="freq")
 dis_m=as.dist(0.5-ibs_m)
 cmd=cmdscale(dis_m)
