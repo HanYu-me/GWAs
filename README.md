@@ -1,18 +1,28 @@
 # GWAs
 This repo is a simple fast GWAs pipeline.
-
+## Table of contents
+*[Dependencies](README.md#dependencies)
+*[Input data description](README.md#Input-data-description)
+*[Dependencies](README.md#dependencies)
+*[Dependencies](README.md#dependencies)
+*[Dependencies](README.md#dependencies)
+*[Dependencies](README.md#dependencies)
 ## Dependencies
 Code can be run on win, and also can be run on linux by changing the file path and software to linux form.
-#### R(3.6<version<4.0)
+### R(3.6<version<4.0)
     packages
     - **GenABEL** for quality control and finding population structure.
     - qqman for drawing the manhattan plot.
     - IntAssoPlot for draw locuszoom plot.
     - parallel for multiple thread calculation.
-#### [Plink](https://www.cog-genomics.org/plink/)
+### Softwares
+<font color=gray>These softwares all can do GWAs independently.</font>
+#### [PLINK](https://www.cog-genomics.org/plink/)
 Convert GenABEL form data to binary form data.
 #### [GCTA](https://yanglab.westlake.edu.cn/software/gcta/#fastGWA)
 Use a fast MLM-based Genome-Wide Association method to do GWAs.
+#### [TASSEL](https://tassel.bitbucket.io/)
+Convert data vcf file to diplo-hmm file.
 
 ## Input data description
 ### gwwa.data-class
@@ -104,3 +114,28 @@ lam <- estlambda(data$P,plot = F)
 qqman::manhattan(data,col = c("blue4", "orange3"))
 ```
 ![manhattan plot](imgs/manhattan.png)
+
+## Locuszoom
+I use R package `IntAssoPlot` to draw locuszoom plot. Diplo-hmp,gtf,and GWAs result file must be prepared in advance.
+```R
+gwa=read.csv(file.choose(),header=T,sep="\t",stringsAsFactors = F)
+gtf=read.csv(file.choose(),header = F,sep="\t",stringsAsFactors = F)
+hmp=read.csv(file.choose(),header = T,sep="\t",stringsAsFactors = F) 
+IntRegionalPlot(chr=5,left=(26223729-10000),right=(26223729+10000),gtf=gtf,association=gwa,hapmap=hmp,hapmap_ld=hmp,threshold=5,leadsnp_size=2,label_gene_name = TRUE,marker2label = marker,marker2label_angle = 0,marker2label_size = 3)
+```
+![locuszoom](imgs/locuazoom.png)
+
+## Parallel in R
+Users can use R package `parallel` to accelerate any step cost long time.
+```R
+fun<-function(i){
+
+}
+clnum<-detectCores()
+cl <- makeCluster(getOption("cl.cores", clnum));
+clusterExport(cl,deparse(substitute(fun)))
+clusterEvalQ(cl,library(anypackage))
+clusterExport(cl,c("variable1","variable2"))#  must load the variables, that the function will used.
+parLapply(cl, 3:31, fun)
+stopCluster(cl)
+```
