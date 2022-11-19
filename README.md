@@ -47,7 +47,7 @@ for(i in 2:10){
 }
 plot(1:10, wss, type="b", xlab="Number of Clusters",ylab="Within groups sum of squares")
 ```
-![population structure](https://github.com/HanYu-me/GWAs/blob/main/imgs/k-means_population_structure.png)
+![population structure](imgs/k-means_population_structure.png)
 ## Heritability
 Use GCTA to calculate narrow sense heritability：
 ```R
@@ -92,8 +92,9 @@ CHR	SNP	POS	A1	A2	N	AF1	BETA	SE	P
 1	1:73	73	A	C	504	0.0615079	-0.0236617	0.406874	0.953625
 1	1:92	92	C	A	504	0.40873	0.0986783	0.198852	0.619725
 ```
-P is the FDR corrected p-value, which can be directly used in visualization.
+P is the raw independent p-value, which need to be corrected beofore  visualization. Bonferroni-correct is the most used method.
 
+***
 After get the result file, we can draw QQplot and manhattan plot:
 ```R
 lam <- estlambda(data$P,plot = F) 
