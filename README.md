@@ -1,13 +1,24 @@
 # GWAs
 This repo is a simple fast GWAs pipeline.
 ## Table of contents
-*[Dependencies](README.md#dependencies)
-*[Input data description](README.md#Input-data-description)
-*[Dependencies](README.md#dependencies)
-*[Dependencies](README.md#dependencies)
-*[Dependencies](README.md#dependencies)
-*[Dependencies](README.md#dependencies)
-## Dependencies
+[Dependencies](#1)
+
+[Input data description](#2)
+
+[Add phenotype to Genabel data](#3)
+
+[Population structure](#4)
+
+[Heritability](#5)
+
+[GWAs and visualization](#6)
+
+[Locuszoom](#7)
+
+[Parallel in R](#8)
+
+
+## <h2 id="1">Dependencies</h2>
 Code can be run on win, and also can be run on linux by changing the file path and software to linux form.
 ### R(3.6<version<4.0)
     packages
@@ -24,7 +35,7 @@ Use a fast MLM-based Genome-Wide Association method to do GWAs.
 #### [TASSEL](https://tassel.bitbucket.io/)
 Convert data vcf file to diplo-hmm file.
 
-## Input data description
+## <h2 id ="2">Input data description</h2>
 ### gwwa.data-class
 In [**GenABEL-package**](https://github.com/HanYu-me/GWAs/blob/main/GenABEL-tutorial.pdf), a special data class, gwaa.data-class is used to store GWA data. You may consider an object of gwaa.data-class as a ’black box’ from which
 you can get specific data using specific functions.
@@ -39,9 +50,9 @@ you can get specific data using specific functions.
  ```
  Where the id must be the same as gwaa.data-class individual.
 
-## Add phenotype to Genabel data
+## <h2 id="3">Add phenotype to Genabel data</h2>
 Use GenABEL function `add.phdata()` to add phenotype value into data.
-## Population structure
+## <h2 id="4">Population structure</h2>
 Population structure was described as cmd distance.
 ```R
 ibs_m=ibs(fl.data.merge,weight="freq")
@@ -58,7 +69,7 @@ for(i in 2:10){
 plot(1:10, wss, type="b", xlab="Number of Clusters",ylab="Within groups sum of squares")
 ```
 ![population structure](imgs/k-means_population_structure.png)
-## Heritability
+## <h2 id="5">Heritability</h2>
 Use GCTA to calculate narrow sense heritability：
 ```R
 GCTA_estKin <- function(gcta,output,input){
@@ -87,7 +98,7 @@ df	1
 Pval	0.0000e+00
 n	504
 ```
-## GWAs and visualization
+## <h2 id="6">GWAs and visualization</h2>
 Also, use GCTA to get GWAs result by fast MLM-based Genome-Wide Association method.
 ```R
 GCTA_mlm <- function(gcta,bfile,grm,pheno,mlm,mark=0){
@@ -115,7 +126,7 @@ qqman::manhattan(data,col = c("blue4", "orange3"))
 ```
 ![manhattan plot](imgs/manhattan.png)
 
-## Locuszoom
+## <h2 id="7">Locuszoom</h2>
 I use R package `IntAssoPlot` to draw locuszoom plot. Diplo-hmp,gtf,and GWAs result file must be prepared in advance.
 ```R
 gwa=read.csv(file.choose(),header=T,sep="\t",stringsAsFactors = F)
@@ -125,7 +136,7 @@ IntRegionalPlot(chr=5,left=(26223729-10000),right=(26223729+10000),gtf=gtf,assoc
 ```
 ![locuszoom](imgs/locuazoom.png)
 
-## Parallel in R
+## <h2 id="8">Parallel in R</h2>
 Users can use R package `parallel` to accelerate any step cost long time.
 ```R
 fun<-function(i){
