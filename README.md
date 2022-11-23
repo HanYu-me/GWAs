@@ -152,11 +152,13 @@ var(\overline{y})= var(X\beta+Zb+e) \qquad(2)
 $$
 
 Beacuse I consider correlation between each item, the phenotype explained by qtl can\`t be dirrectly calculated by $var(X\beta)/var(\overline{y})$, but by:
+
 $$
 \frac{1-var(\overline{y}-var(X\beta))}{var(\overline{y})} \qquad(3)
 $$
 
 Variance conmponent of kinship is also caculated by"
+
 $$
 \frac{1-var(\overline{y}-X\beta-Zb)}{var(\overline{y})}-\frac{1-var(\overline{y}-var(X\beta))}{var(\overline{y})} \qquad(4)
 $$
