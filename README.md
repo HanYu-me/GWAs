@@ -15,6 +15,8 @@ This repo is a simple fast GWAs pipeline.
 
 [Locuszoom](#7)
 
+[Variance component](#9)
+
 [Parallel in R](#8)
 
 
@@ -135,6 +137,12 @@ hmp=read.csv(file.choose(),header = T,sep="\t",stringsAsFactors = F)
 IntRegionalPlot(chr=5,left=(26223729-10000),right=(26223729+10000),gtf=gtf,association=gwa,hapmap=hmp,hapmap_ld=hmp,threshold=5,leadsnp_size=2,label_gene_name = TRUE,marker2label = marker,marker2label_angle = 0,marker2label_size = 3)
 ```
 ![locuszoom](imgs/locuazoom.png)
+
+## <h2 id="9">Variance component</h2>
+Variance explained is an estimation of the fraction of phenotype explained by qtls as $\frac{\sigma_{qtls}^2}{\sigma_{phe}^2}$. The mixed liner model can be discribe as:
+$$ \overline{y}=X\beta+Zb+e $$
+Where $\overline{y}$ means the mean value of phenotype, $X\beta$ means the fixed effect of qtls, $Zb$ means the random effect of Kinship(a concept of individual similarity) and $e$ means residul.
+I use a package `hglm` based mixed liner model to fit my fix effect and random effect. 
 
 ## <h2 id="8">Parallel in R</h2>
 Users can use R package `parallel` to accelerate any step cost long time.
