@@ -139,22 +139,22 @@ IntRegionalPlot(chr=5,left=(26223729-10000),right=(26223729+10000),gtf=gtf,assoc
 ![locuszoom](imgs/locuazoom.png)
 
 ## <h2 id="9">Variance component</h2>
-Variance explained is an estimation of the fraction of phenotype explained by qtls as $\frac{\sigma_{qtls}^2}{\sigma_{phe}^2}$. The mixed liner model can be discribe as:
+Variance explained is an estimation of the fraction of phenotype explained by qtls as $\frac{\sigma_{qtls}^2}{\sigma_{phe}^2}$. The mixed liner model can be described as:
 
 $$
 \overline{y}=X\beta+Zb+e \qquad(1)
 $$
 
-Where $\overline{y}$ means the mean value of phenotype, $X\beta$ means the fixed effect of qtls, $Zb$ means the random effect of Kinship(a concept of individual similarity) and $e$ means residul. So the variance of phenotype can be discribe as:
+Where $\overline{y}$ means the mean value of phenotype, $X\beta$ means the fixed effect of qtls, $Zb$ means the random effect of Kinship (a concept of individual similarity) and $e$ means residul. So the variance of phenotype can be described as:
 
 $$
 var(\overline{y})= var(X\beta+Zb+e) \qquad(2)
 $$
-Beacuse I consider correlation between each item, the phenotype explained by qtl can\`t be dirrectly caculate by $var(X\beta)/var(\overline{y})$, but by:
+Beacuse I consider correlation between each item, the phenotype explained by qtl can\`t be dirrectly calculated by $var(X\beta)/var(\overline{y})$, but by:
 $$
 \frac{1-var(\overline{y}-var(X\beta))}{var(\overline{y})} \qquad(3)
 $$
-Variance conmponent of kinship is also caculate by"
+Variance conmponent of kinship is also caculated by"
 $$
 \frac{1-var(\overline{y}-X\beta-Zb)}{var(\overline{y})}-\frac{1-var(\overline{y}-var(X\beta))}{var(\overline{y})} \qquad(4)
 $$
@@ -202,7 +202,7 @@ Dispersion parameter for the random effects: 26.70299
 
 Estimation converged in 8 iterations
 ```
-`Fixed effects` is the effect of all selected qtls, `Random effects` is the effect of all individual (511). The variance conmponent of qtls and kinship can be caculated by:
+`Fixed effects` is the effect of all selected qtls, `Random effects` is the effect of all individuals (511). The variance component of qtls and kinship can be calculated by:
 ```R
 R2.all <- 1- var(ph[na] - cbind(1, geno[na,])%*%withsnp.hglm$fixef)/var(ph[na])
 kin_R2=1-var(ph[na]-cbind(1, geno[na,])%*%withsnp.hglm$fixef-Z%*%withsnp.hglm$ranef)/var(ph[na])
