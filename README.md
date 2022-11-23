@@ -149,7 +149,6 @@ Where $\overline{y}$ means the mean value of phenotype, $X\beta$ means the fixed
 
 $$
 var(\overline{y})= var(X\beta+Zb+e) \qquad(2)
-
 $$
 
 I use a package `hglm` based mixed liner model to fit my fix effect and random effect. 
