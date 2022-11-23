@@ -140,7 +140,9 @@ IntRegionalPlot(chr=5,left=(26223729-10000),right=(26223729+10000),gtf=gtf,assoc
 
 ## <h2 id="9">Variance component</h2>
 Variance explained is an estimation of the fraction of phenotype explained by qtls as $\frac{\sigma_{qtls}^2}{\sigma_{phe}^2}$. The mixed liner model can be discribe as:
-$$ \overline{y}=X\beta+Zb+e $$
+
+$\overline{y}=X\beta+Zb+e$
+
 Where $\overline{y}$ means the mean value of phenotype, $X\beta$ means the fixed effect of qtls, $Zb$ means the random effect of Kinship(a concept of individual similarity) and $e$ means residul.
 I use a package `hglm` based mixed liner model to fit my fix effect and random effect. 
 
