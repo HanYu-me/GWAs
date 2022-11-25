@@ -222,7 +222,7 @@ clnum<-detectCores()
 cl <- makeCluster(getOption("cl.cores", clnum));
 clusterExport(cl,deparse(substitute(fun)))
 clusterEvalQ(cl,library(anypackage))
-clusterExport(cl,c("variable1","variable2"))#  must load the variables, that the function will used.
+clusterExport(cl,c("defined function","variable1","variable2"))#  must load the variables, that the function will used.
 parLapply(cl, 3:31, fun)
 stopCluster(cl)
 ```
