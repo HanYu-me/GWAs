@@ -37,7 +37,7 @@ Use a fast MLM-based Genome-Wide Association method to do GWAs.
 #### [TASSEL](https://tassel.bitbucket.io/)
 Convert data vcf file to diplo-hmm file.
 
-## <h2 id ="2">Input data description</h2>
+## <h2 id ="2">Input data</h2>
 ### gwwa.data-class
 In [**GenABEL-package**](https://github.com/HanYu-me/GWAs/blob/main/GenABEL-tutorial.pdf), a special data class, gwaa.data-class is used to store GWA data. You may consider an object of gwaa.data-class as a ’black box’ from which
 you can get specific data using specific functions.
